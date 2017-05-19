@@ -4,10 +4,10 @@ Pod::Spec.new do |s|
 
   s.name         = "DPSessionManager"
   s.version      = "3.0.0"
-  s.summary      = "Base framework for service calls."
+  s.summary      = "Base framework for service calls"
 
   s.description  = <<-DESC
-The base framework for creating more complex service calls to a server-base API.
+The base framework for creating more complex service calls to a server-based API.
                    DESC
 
   s.homepage     = "http://www.danielperson.com"
@@ -31,7 +31,7 @@ The base framework for creating more complex service calls to a server-base API.
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.source       = { :git => "git@bitbucket.org:66BonEvil/dpsessionmanager.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/BonEvil/DPSessionManager.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -46,4 +46,3 @@ The base framework for creating more complex service calls to a server-base API.
   s.dependency Bolts-Swift', '1.2.0'
 
 end
-
