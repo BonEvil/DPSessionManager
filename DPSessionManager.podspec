@@ -15,7 +15,7 @@ The base framework for creating more complex service calls to a server-based API
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.license      = { :type => "MIT", :file => "LICENSE" }
+  s.license      = { :type => "GNU GPLv3", :file => "LICENSE" }
 
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
