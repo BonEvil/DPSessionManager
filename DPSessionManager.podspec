@@ -43,6 +43,6 @@ The base framework for creating more complex service calls to a server-based API
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.requires_arc = true
-  s.dependency Bolts-Swift', '1.2.0'
+  s.dependency 'Bolts-Swift', '1.2.0'
 
 end
