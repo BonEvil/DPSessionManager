@@ -26,7 +26,7 @@ The base framework for creating more complex service calls to a server-based API
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.platform     = :ios, "8.0"
+  s.platform     = :ios, "9.0"
 
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
