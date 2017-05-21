@@ -59,9 +59,9 @@ open class DPSessionManager:NSObject
         createSession()
     }
     
-    open func start(_ service:DPService) -> Task<AnyObject>
+    open func start(_ service:DPService) -> Task<Any>
     {
-        let source = TaskCompletionSource<AnyObject>()
+        let source = TaskCompletionSource<Any>()
         
         if let serviceCredential = service.credential
         {
