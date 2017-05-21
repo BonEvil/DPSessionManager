@@ -21,11 +21,11 @@ open class DPFormRequestSerializer:DPRequestSerializer
         return charSet
     }
     
-    open func serialize(_ object:AnyObject) -> Data?
+    open func serialize(_ object:Any) -> Data?
     {
         var formData:Data?
         
-        if let params = object as? Dictionary<String,AnyObject>
+        if let params = object as? Dictionary<String,Any>
         {
             var body = ""
             

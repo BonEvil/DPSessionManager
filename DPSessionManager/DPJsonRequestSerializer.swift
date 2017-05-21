@@ -10,7 +10,7 @@ import Foundation
 
 open class DPJsonRequestSerializer:DPRequestSerializer
 {
-    open func serialize(_ object:AnyObject) -> Data?
+    open func serialize(_ object:Any) -> Data?
     {
         do
         {

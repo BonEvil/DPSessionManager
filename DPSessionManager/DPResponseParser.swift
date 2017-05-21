@@ -10,5 +10,5 @@ import Foundation
 
 public protocol DPResponseParser
 {
-    func parse(_ data:Data) -> AnyObject?
+    func parse(_ data:Data) -> Any?
 }

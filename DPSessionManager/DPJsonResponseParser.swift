@@ -10,11 +10,11 @@ import Foundation
 
 open class DPJsonResponseParser:DPResponseParser
 {
-    open func parse(_ data: Data) -> AnyObject?
+    open func parse(_ data: Data) -> Any?
     {
         do {
             let responseBody = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
-            return responseBody as AnyObject?
+            return responseBody as Any?
         }
         catch let error as NSError
         {

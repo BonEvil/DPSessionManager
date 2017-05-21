@@ -10,5 +10,5 @@ import Foundation
 
 public protocol DPRequestSerializer
 {
-    func serialize(_ object:AnyObject) -> Data?
+    func serialize(_ object:Any) -> Data?
 }
