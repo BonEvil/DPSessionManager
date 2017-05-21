@@ -22,8 +22,8 @@ open class DPSessionManager:NSObject
         return queue
     }()
     
-    var session:Foundation.URLSession!
-    var credential:URLCredential?
+    fileprivate var session:Foundation.URLSession!
+    fileprivate var credential:URLCredential?
     
     override init()
     {
