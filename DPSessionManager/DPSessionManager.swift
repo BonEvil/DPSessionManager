@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import BoltsSwift
+
+public typealias DPServiceResponse = (NSError?,Any?) -> ()
 
 open class DPSessionManager:NSObject
 {
@@ -59,10 +60,8 @@ open class DPSessionManager:NSObject
         createSession()
     }
     
-    open func start(_ service:DPService) -> Task<Any>
+    open func start(_ service:DPService, serviceResponse:@escaping DPServiceResponse)
     {
-        let source = TaskCompletionSource<Any>()
-        
         if let serviceCredential = service.credential
         {
             credential = serviceCredential
@@ -71,9 +70,9 @@ open class DPSessionManager:NSObject
         let request = createRequest(service)
         session.dataTask(with: request, completionHandler: {(data, response, error) in
             DispatchQueue.main.async(execute: { () -> Void in
-                if let err = error
+                if let err = error as? NSError
                 {
-                    source.set(error: err)
+                    serviceResponse(err,nil)
                 }
                 else
                 {
@@ -103,12 +102,12 @@ open class DPSessionManager:NSObject
                                         {
                                             if let parsedData = parser.parse(responseData)
                                             {
-                                                source.set(result: parsedData)
+                                                serviceResponse(nil,parsedData)
                                             }
                                             else
                                             {
                                                 let error = NSError(domain: DPSessionManager.errorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey:"Could not parse response.","Response":responseData])
-                                                source.set(error: error)
+                                                serviceResponse(error,nil)
                                             }
                                         }
                                         else // USE DEFAULT PARSERS
@@ -118,61 +117,60 @@ open class DPSessionManager:NSObject
                                             case .JSON:
                                                 if let parsedData = DPJsonResponseParser().parse(responseData)
                                                 {
-                                                    source.set(result: parsedData)
+                                                    serviceResponse(nil,parsedData)
                                                 }
                                                 else
                                                 {
                                                     let error = NSError(domain: DPSessionManager.errorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey:"Could not parse response.","Response":responseData])
-                                                    source.set(error: error)
+                                                    serviceResponse(error,nil)
                                                 }
                                             case .HTML,.TEXT:
                                                 if let text = String(data: responseData, encoding: String.Encoding.utf8)
                                                 {
-                                                    source.set(result: text as AnyObject)
+                                                    serviceResponse(nil,text)
                                                 }
                                                 else if let text = String(data: responseData, encoding: String.Encoding.ascii)
                                                 {
-                                                    source.set(result: text as AnyObject)
+                                                    serviceResponse(nil,text)
                                                 }
                                                 else
                                                 {
                                                     let error = NSError(domain: DPSessionManager.errorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey:"Could not parse response.","Response":responseData])
-                                                    source.set(error: error)
+                                                    serviceResponse(error,nil)
                                                 }
                                             case .XML:
-                                                source.set(result: XMLParser(data: responseData))
-                                            default:source.set(result: responseData as AnyObject)
+                                                serviceResponse(nil,XMLParser(data: responseData))
+                                            default:
+                                                serviceResponse(nil,responseData)
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        source.set(result: "" as AnyObject)
+                                        serviceResponse(nil,nil)
                                     }
                                 }
                                 else
                                 {
                                     let error = NSError(domain: DPSessionManager.errorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey:"Invalid content type. Expected '\(acceptType)' but received '\(contentType)' from response."])
-                                    source.set(error: error)
+                                    serviceResponse(error,nil)
                                 }
                             }
                             else
                             {
                                 let error = NSError(domain: DPSessionManager.errorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey:"No content type specified."])
-                                source.set(error: error)
+                                serviceResponse(error,nil)
                             }
                         }
                     }
                     else
                     {
                         let error = NSError(domain: DPSessionManager.errorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey:"No data returned from server."])
-                        source.set(error: error)
+                        serviceResponse(error,nil)
                     }
                 }
             })
         }).resume()
-        
-        return source.task
     }
     
     // MARK: HELPER METHODS
