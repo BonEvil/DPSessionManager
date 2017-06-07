@@ -68,7 +68,7 @@ open class DPSessionManager:NSObject
         }
         
         let request = createRequest(service)
-        session.dataTask(with: request, completionHandler: {(data, response, error) in
+        session.dataTask(with: request, completionHandler: { [unowned self] (data, response, error) in
             DispatchQueue.main.async(execute: { () -> Void in
                 if let err = error as? NSError
                 {
@@ -82,23 +82,15 @@ open class DPSessionManager:NSObject
                         {
                             if let contentTypeHeader = headers["Content-Type"] as? String
                             {
-                                var contentType = ""
-                                let contentTypeArray = contentTypeHeader.components(separatedBy: ";")
-                                if contentTypeArray.count > 0
-                                {
-                                    contentType = contentTypeArray[0]
-                                }
-                                var acceptType = service.acceptType.rawValue
-                                if let customAcceptType = service.customAcceptType
-                                {
-                                    acceptType = customAcceptType
-                                }
+                                let contentType = self.getContentType(contentTypeHeader: contentTypeHeader);
+                                
+                                let acceptType = self.getAcceptType(service: service)
                                 
                                 if acceptType == contentType
                                 {
                                     if let responseData = data
                                     {
-                                        if let parser = service.responseParser // IF THE SERVICE HAS A CUSTOM PARSER
+                                        if let parser = service.responseParser // CUSTOM PARSER
                                         {
                                             if let parsedData = parser.parse(responseData)
                                             {
@@ -221,7 +213,7 @@ open class DPSessionManager:NSObject
         {
             if let serializer = service.requestSerializer // IF THE SERVICE HAS A CUSTOM SERIALIZER
             {
-                if let data = serializer.serialize(requestParams as AnyObject)
+                if let data = serializer.serialize(requestParams as Any)
                 {
                     request.httpBody = data
                 }
@@ -231,12 +223,12 @@ open class DPSessionManager:NSObject
                 switch service.contentType // USE DEFAULT SERIALIZERS
                 {
                 case.JSON:
-                    if let data = DPJsonRequestSerializer().serialize(requestParams as AnyObject)
+                    if let data = DPJsonRequestSerializer().serialize(requestParams as Any)
                     {
                         request.httpBody = data
                     }
                 case.FORM:
-                    if let data = DPFormRequestSerializer().serialize(requestParams as AnyObject)
+                    if let data = DPFormRequestSerializer().serialize(requestParams as Any)
                     {
                         if service.requestType == .GET
                         {
@@ -256,8 +248,32 @@ open class DPSessionManager:NSObject
         
         return request as URLRequest
     }
+    
+    fileprivate func getContentType(contentTypeHeader: String) -> String
+    {
+        var contentType = contentTypeHeader
+        let contentTypeArray = contentTypeHeader.components(separatedBy: ";")
+        if contentTypeArray.count > 0
+        {
+            contentType = contentTypeArray[0]
+        }
+        
+        return contentType
+    }
+    
+    fileprivate func getAcceptType(service: DPService) -> String
+    {
+        var acceptType = service.acceptType.rawValue
+        if let customAcceptType = service.customAcceptType
+        {
+            acceptType = customAcceptType
+        }
+        
+        return acceptType
+    }
 }
 
+// MARK: SESSION TASK DELEGATE
 extension DPSessionManager:URLSessionTaskDelegate
 {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
