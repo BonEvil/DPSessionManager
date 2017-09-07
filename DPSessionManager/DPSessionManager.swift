@@ -70,7 +70,7 @@ open class DPSessionManager:NSObject
         let request = createRequest(service)
         session.dataTask(with: request, completionHandler: { [unowned self] (data, response, error) in
             DispatchQueue.main.async(execute: { () -> Void in
-                if let err = error as? NSError
+                if let err = error as NSError?
                 {
                     serviceResponse(err,nil)
                 }
@@ -90,6 +90,14 @@ open class DPSessionManager:NSObject
                                 {
                                     if let responseData = data
                                     {
+                                        let statusCode = urlResponse.statusCode
+                                        if statusCode != 200 {
+                                            let error = NSError(domain: DPSessionManager.errorDomain, code: statusCode, userInfo: [NSLocalizedDescriptionKey:"Error - use 'Response' key for response data","Response":responseData])
+                                            serviceResponse(error,nil)
+                                            
+                                            return
+                                        }
+                                        
                                         if let parser = service.responseParser // CUSTOM PARSER
                                         {
                                             if let parsedData = parser.parse(responseData)
