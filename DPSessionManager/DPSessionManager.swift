@@ -94,7 +94,10 @@ open class DPSessionManager:NSObject
                                         {
                                             if let parsedData = parser.parse(responseData)
                                             {
-                                                serviceResponse(nil,parsedData)
+                                                switch parsedData {
+                                                case is NSError:serviceResponse(parsedData as! NSError,nil)
+                                                default:serviceResponse(nil,parsedData)
+                                                }
                                             }
                                             else
                                             {
